@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import plotly.express as px
 from streamlit_option_menu import option_menu
 import pickle
 
@@ -32,7 +31,7 @@ elif selected == "Visualisation":
     st.write("Choisissez le type de visualisation")
     selectedVisual = option_menu(
     menu_title=None,  # Correct parameter name
-    options=["Pourcentage","Niveau de poids", "Relations",],  # Correct spelling of 'Menu'
+    options=["Niveau de poids", "Relations",],  # Correct spelling of 'Menu'
     default_index=0,  # Default selected index (optional)
 )
 
@@ -44,29 +43,33 @@ elif selected == "Visualisation":
       def vislevel(level):
             if level:
                   dfi=df[df["NObeyesdad"] == level][["Age","Weight","Gender"]]
-                  fig = px.scatter(dfi, x='Age', y='Weight',color="Gender")
-                  st.plotly_chart(fig, use_container_width=True)
-      vislevel(level) 
-    elif selectedVisual=="Relations":      
-      correlation_matrix = final_df.corr()
-      correlation_matrix_reset = correlation_matrix.reset_index().melt(id_vars='index')
-      fig2 = px.imshow(correlation_matrix,
-                       x=correlation_matrix.columns,
-                       y=correlation_matrix.index,
-              color_continuous_scale='RdBu_r',
-              zmin=-1, zmax=1)
-      fig2.update_layout(title='La matrice de correlation',
-              xaxis_title='Variables',
-              yaxis_title='Variables')
-      st.plotly_chart(fig2, use_container_width=True)
-    elif selectedVisual=="Pourcentage":
-          charDf=({
-                "count":df["NObeyesdad"].value_counts(),
-                "level":df["NObeyesdad"].unique()
-          })
-          fig3 = px.pie(charDf, values='count', names='level', title='Le pourcentag de chaque categorie dans l"ensemble de notre population')
-          st.plotly_chart(fig3,use_container_width=True)
+                  st.scatter_chart(dfi,x="Age",y="Weight",color="Gender")
 
+
+      vislevel(level) 
+    elif selectedVisual=="Relations":
+
+
+
+      Level=st.selectbox("Choisissez le niveau de poids",("Obesity_Type_I","Obesity_Type_III","Obesity_Type_II","Overweight_Level_I","Overweight_Level_II","Normal_Weight","Insufficient_Weight"),index=None,placeholder="choisissez un niveau")
+      def vislevel(level):
+            if Level:
+                  dfi=df[df["NObeyesdad"] == Level][["Age","Gender","CAEC","Weight","Height","family_history_with_overweight"]]
+                  levelDf=({
+                "Weight":dfi["Weight"],
+                "Height":dfi["Height"],
+                "Gender":dfi["Gender"],
+                "family_history_with_overweight":dfi["family_history_with_overweight"],
+                "CAEC":dfi["CAEC"],
+                "x":dfi["Age"].index
+          })
+                  st.scatter_chart(levelDf,x="Weight",y="x",color="family_history_with_overweight")
+                  st.bar_chart(levelDf,x="Weight",y="x",color="CAEC")
+                  st.scatter_chart(levelDf,x="Weight",y="x",color="family_history_with_overweight")
+
+
+
+      vislevel(Level) 
 
     
 
