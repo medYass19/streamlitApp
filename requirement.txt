@@ -1,0 +1,9 @@
+numpy
+pandas
+streamlit
+streamlit_option_menu
+pickle
+sklearn
+sklearn.linear_model
+sklearn.metrics
+sklearn.model_selection
